@@ -1,0 +1,343 @@
+---
+title: "List of Trainings"
+author: "Joao Luiz D'Andrea"
+date: '2022-04-22'
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: false
+    theme: lumen
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r warning=FALSE, include=FALSE}
+library(tidyverse)
+library(plotly)
+library(tm)
+library(SnowballC)
+library(wordcloud)
+library(RColorBrewer)
+library(DT)
+library(gridExtra)
+library(viridis)
+library(kableExtra)
+library(formattable)
+```
+
+```{r warning=FALSE, include=FALSE}
+# Read file
+Training <- read_csv("Training2022.csv", show_col_types = FALSE)
+```
+
+## Training per Area
+
+```{r}
+theme_set(
+  theme_grey() +
+    theme(legend.position = "none",
+          axis.title.y = element_blank(),
+          plot.title = element_text(hjust = 0.1)
+  ))
+
+```
+
+```{r}
+GA <- ggplot(Training, aes(y = Area)) +
+ geom_bar(aes(fill = Area)) +
+  #ggtitle("Overall Training(Courses)") +
+  xlab("Courses") +
+  scale_color_viridis(discrete = TRUE, option = "E") +
+  scale_fill_viridis(discrete = TRUE, option = "E") +
+  theme(legend.position = "none")
+```
+
+```{r}
+GB <- ggplot(Training, aes(x = Total, y = Area)) +
+  geom_col(aes(fill = Area)) +
+  #ggtitle("Overall Training(Hours)") +
+  xlab("Hours")+
+  scale_color_viridis(discrete = TRUE, option = "E") +
+  scale_fill_viridis(discrete = TRUE, option = "E") +
+  theme(legend.position = "none")
+```
+
+```{r}
+grid.arrange(GA, GB, nrow = 2)
+```
+
+------------------------------------------------------------------------
+
+## Governance 
+
+```{r}
+# Filtering Training by Area
+Governance <- Training %>%
+  filter( Area == "IT Governance") %>%
+  arrange(Skills, Course,"Date", descending = TRUE) %>%
+  select(Course, Skills,'Date', Instructor, Company, Total)
+```
+
+```{r}
+GC <- ggplot(Governance, aes(y = Skills)) +
+ geom_bar(aes(fill = Skills)) +
+  #ggtitle("Governance Training(Courses)")+
+  xlab("Courses")+
+  scale_color_viridis(discrete = TRUE, option = "D") +
+  scale_fill_viridis(discrete = TRUE) +
+  theme(legend.position = "none")
+```
+
+```{r}
+GD <- ggplot(Governance, aes(x = Total, y = Skills)) +
+  geom_col(aes(fill = Skills)) +
+  #ggtitle("Governance Training(Hours)") +
+  xlab("Hours")+
+  scale_color_viridis(discrete = TRUE, option = "D") +
+  scale_fill_viridis(discrete = TRUE) +
+  theme(legend.position = "none")
+```
+
+```{r}
+grid.arrange(GC, GD, nrow = 2 )
+
+```
+
+----
+
+```{r}
+Governance %>%
+  kbl(caption = "Governance Training") %>%
+  kable_paper("hover", full_width = F) %>% 
+  kable_styling(bootstrap_options = "striped",full_width = F, position = "left")
+```
+
+------------------------------------------------------------------------
+
+## Project Management
+
+```{r}
+ProjectManagement <- Training %>%
+  filter( Area == "Project Management") %>%
+  arrange(Skills,Technology,Course,"Date", descending = TRUE) %>%
+  select(Course, Skills, 'Date', Instructor, Company, Skills, Total)
+```
+
+```{r}
+GC <- ggplot(ProjectManagement, aes(y = Skills)) +
+        geom_bar(aes(fill = Skills)) +
+        #ggtitle("Project Management Training(Courses)") +
+        xlab("Courses")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+GD <- ggplot(ProjectManagement, aes(x = Total, y = Skills)) +
+        geom_col(aes(fill = Skills)) +
+        #ggtitle("Project Management Training(Hours)") +
+        xlab("Hours")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+grid.arrange(GC, GD, nrow = 2)
+```
+
+----
+
+```{r}
+ProjectManagement %>%
+  kbl(caption = "Project Management Training") %>%
+  kable_paper("hover", full_width = F) %>% 
+  kable_styling(bootstrap_options = "striped", full_width = F, position = "left")
+```
+
+------------------------------------------------------------------------
+
+## Information Technology
+
+```{r}
+IT <- Training %>%
+  filter(Area == "Information technology") %>% 
+  arrange(Skills,Technology,Course,"Date", descending = FALSE) %>%
+  select(Course, Skills, Technology, 'Date', Instructor, Company, Total)
+```
+
+```{r}
+GA <- ggplot(IT, aes(y = Skills)) +
+        geom_bar(aes(fill = Skills)) +
+        #ggtitle("Information Technology Training(Courses)")+
+        xlab("Courses")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+GB <- ggplot(IT, aes(x = Total, y = Skills)) +
+        geom_col(aes(fill = Skills)) +
+        #ggtitle("Information Technology Training(Hours)") +
+        xlab("Hours")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+#grid.arrange(GA,GB)
+```
+
+```{r}
+GC <- ggplot(IT, aes(y = Technology)) +
+        geom_bar(aes(fill = Technology)) +
+        #ggtitle("Information Technology Training(Courses)")+
+        xlab("Courses")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+GD <- ggplot(IT, aes(x = Total, y = Technology)) +
+        geom_col(aes(fill = Technology)) +
+        #ggtitle("Information Technology Training(Hours)")+
+        xlab("Hours")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+grid.arrange(GA,GB,GC,GD,nrow = 2, ncol = 2)
+```
+
+----
+
+```{r}
+IT %>%
+  kbl(caption = "Information Technology Training") %>%
+  kable_paper("hover", full_width = F) %>% 
+  kable_styling(bootstrap_options = "striped", full_width = F, position = "left")
+```
+
+------------------------------------------------------------------------
+
+## Data Science & Big Data
+
+```{r}
+DataScience <- Training %>%
+  filter( Area == "Data Science") %>%
+  arrange(Skills,Technology,Course,"Date", descending = TRUE) %>%
+  select(Course, Skills, Technology, 'Date', Instructor, Company, Total)
+```
+
+```{r}
+GA <- ggplot(DataScience, aes(y = Skills)) +
+        geom_bar(aes(fill = Skills)) +
+        #ggtitle("Data Science & Big Data Training(Courses)")+
+        xlab("Courses")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+GB <- ggplot(DataScience, aes(x = Total, y = Skills)) +
+        geom_col(aes(fill = Skills), position = position_stack(reverse = TRUE)) +
+        #ggtitle("Data Science & Big Data Training(Hours)") +
+        xlab("Hours") +
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+# grid.arrange(GA,GB)
+```
+
+```{r}
+GC <- ggplot(DataScience, aes(y = Technology)) +
+        geom_bar(aes(fill = Technology)) +
+        #ggtitle("Data Science & Big Data Training(Courses)")+
+        xlab("Courses")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+GD <- ggplot(DataScience, aes(x = Total, y = Technology)) +
+        geom_col(aes(fill = Technology)) +
+        #ggtitle("Data Science & Big Data Training(Courses)") +
+        xlab("Hous")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+grid.arrange(GA,GB,GC,GD, ncol = 2, nrow = 2)
+```
+
+----
+
+```{r}
+DataScience %>%
+  kbl(caption = "Data Science Training") %>%
+  kable_paper("hover", full_width = F)%>% 
+  kable_styling(bootstrap_options = "striped", full_width = F, position = "left")
+```
+
+------------------------------------------------------------------------
+
+## Business & Management
+
+```{r}
+Business <- Training %>%
+  filter( Area == "Business") %>%
+  arrange(Skills,Course,"Date", descending = TRUE) %>%
+  select(Course, 'Date', Instructor, Company, Skills, Total)
+```
+
+```{r}
+GC <- ggplot(Business, aes(y = Skills)) +
+        geom_bar(aes(fill = Skills)) +
+        #ggtitle("Business Training(Courses)") +
+        xlab("Courses")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+GD <- ggplot(Business, aes(x = Total, y = Skills)) +
+        geom_col(aes(fill = Skills)) +
+        #ggtitle("Business Training(Hours)") +
+        xlab("Hours")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+grid.arrange(GC, GD, nrow = 2)
+```
+
+----
+
+```{r}
+Business %>%
+  kbl(caption = "Busines Training", escape = F) %>%
+  kable_paper("hover", full_width = F) %>% 
+  column_spec(6, width = "3cm") %>% 
+  kable_styling( full_width = F, position = "left")
+```
