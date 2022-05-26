@@ -1,0 +1,384 @@
+---
+title: "List of Trainings"
+author: "Joao Luiz D'Andrea"
+date: '2022-05-18'
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: false
+    theme: lumen
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.height = 5, fig.width = 10 )
+```
+
+```{r warning=FALSE, include=FALSE}
+library(tidyverse)
+library(plotly)
+library(tm)
+library(SnowballC)
+library(wordcloud)
+library(RColorBrewer)
+library(DT)
+library(gridExtra)
+library(viridis)
+library(kableExtra)
+```
+
+```{r warning=FALSE, include=FALSE}
+# Read file
+Training <- read_csv("Training2022.csv", show_col_types = FALSE)
+Training$Date <- as.Date(Training$Date, format =  "%m/%d/%Y")
+```
+
+I can resume all this learning experience as "Discipline". Motivation makes you start discipline moves you to the end.
+
+## Training per Area
+
+What you will see below is a list of training I did to support my professional life as an Information technology Project Manager. When you work as a consultant in the enterprise is important to know about the best practices in IT Governance, Project Management and the trending technologies.
+
+Not to micromanage but to see with others can't. Proactively avoiding problems and mitigating risks. "You can't control what you can't measure" -- Tom DeMarco.
+
+```{r}
+theme_set(
+  theme_grey() +
+    theme(legend.position = "none",
+          axis.title.y = element_blank(),
+          plot.title = element_text(hjust = 0.5)
+  ))
+
+```
+
+```{r}
+GA <- ggplot(Training, aes(y = Area)) +
+ geom_bar(aes(fill = Area)) +
+  ggtitle("Overall Training(Courses)") +
+  xlab("Courses") +
+  scale_color_viridis(discrete = TRUE, option = "E") +
+  scale_fill_viridis(discrete = TRUE, option = "E") +
+  theme(legend.position = "none")
+```
+
+```{r}
+GB <- ggplot(Training, aes(x = Total, y = Area)) +
+  geom_col(aes(fill = Area)) +
+  ggtitle("Overall Training(Hours)") +
+  xlab("Hours")+
+  scale_color_viridis(discrete = TRUE, option = "E") +
+  scale_fill_viridis(discrete = TRUE, option = "E") +
+  theme(legend.position = "none")
+```
+
+```{r}
+grid.arrange(GA, GB, nrow = 1)
+```
+
+------------------------------------------------------------------------
+
+## Governance in Information Technology
+
+Know IT Governance is important to feel the context we are inserted. Projects must be Planned, Executed, Controlled and Closed with this in mind. At the end the project must fit in the Governance in place considering, people, polices and frameworks, processes, organizational structures, culture, ethics and behavior, information, services, Infrastructure and applications.
+
+```{r}
+# Filtering Training by Area
+Governance <- Training %>%
+  filter( Area == "IT Governance") %>%
+  arrange(Skills, Course,"Date", descending = TRUE) %>%
+  select(Course, Skills,'Date', Instructor, Company, Total)
+```
+
+```{r}
+GC <- ggplot(Governance, aes(y = Skills)) +
+ geom_bar(aes(fill = Skills)) +
+  ggtitle("Governance Training(Courses)")+
+  xlab("Courses")+
+  scale_color_viridis(discrete = TRUE, option = "D") +
+  scale_fill_viridis(discrete = TRUE) +
+  theme(legend.position = "none")
+```
+
+```{r}
+GD <- ggplot(Governance, aes(x = Total, y = Skills)) +
+  geom_col(aes(fill = Skills)) +
+  ggtitle("Governance Training(Hours)") +
+  xlab("Hours")+
+  scale_color_viridis(discrete = TRUE, option = "D") +
+  scale_fill_viridis(discrete = TRUE) +
+  theme(legend.position = "none")
+```
+
+```{r}
+grid.arrange(GC, GD, nrow = 1)
+```
+
+```{r}
+# Building a Table 
+Governance %>% datatable(class = 'cell-border stripe',filter = "top", 
+          options = list(pageLength = 4),
+          caption = htmltools::tags$caption( style = 'caption-side: top;
+                                                      text-align: center;
+                                                      color:black;
+                                                      font-size:200% ;
+                                                      ','Governance Training')) %>% 
+          
+          formatRound('Total', 0)
+```
+
+------------------------------------------------------------------------
+
+## Project Management
+
+Project Management is about Servant Leadership it means be open to do your best to remove any impediments we as a team have to deliver the outcome.
+
+The best practices like **PRINCE2**, **PMBOK**, and agile practices like **Scrum**, **Kanban** must be known. Keep in mind we are free to adapt and improve to our own needs. "Methodologies are treks not rails" - Joao Luiz D'Andrea
+
+```{r}
+ProjectManagement <- Training %>%
+  filter( Area == "Project Management") %>%
+  arrange(Skills,Technology,Course,"Date", descending = TRUE) %>%
+  select(Course, Skills, 'Date', Instructor, Company, Skills, Total)
+```
+
+```{r}
+GC <- ggplot(ProjectManagement, aes(y = Skills)) +
+        geom_bar(aes(fill = Skills)) +
+        ggtitle("Project Management Training(Courses)") +
+        xlab("Courses")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+GD <- ggplot(ProjectManagement, aes(x = Total, y = Skills)) +
+        geom_col(aes(fill = Skills)) +
+        ggtitle("Project Management Training(Hours)") +
+        xlab("Hours")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+grid.arrange(GC, GD, nrow = 1)
+```
+
+```{r}
+ProjectManagement %>% datatable(class = 'cell-border stripe',filter = "top", 
+          options = list(pageLength = 53),
+          caption = htmltools::tags$caption( 
+          style = 'caption-side: top;                                                                           text-align: center;                                                                          color:black;
+                   font-size:200%;
+          ','Project Management Training')) %>% 
+          formatRound('Total', 0)
+```
+
+------------------------------------------------------------------------
+
+## Information Technology
+
+I love technology and how affect the business and our day-by-day activities and change the world. That was my motivation when I started my way in IT.
+
+Update with the new releases of ERP and CRM Software like SAP, Sales-force, Microsoft Dynamics 365.
+
+It has been a life learning endeavor to keep up to date and have a deep understand of new technologies in special in the last ten year when infrastructure enable **Artificial Intelligence**, **Machine Learning**, **Block Chain** and the **Cloud** movement. In the table below we can see my effort in that direction learning: **Spark** (Spark SQL, Spark Graph-X, Spark ML, Spark Streaming), **Hadoop**, Ambary, HDFS, Map Reduce, Pig, Hive, Drill, Phoenix, Presto, Yarn, Messos, Zookeeper, Oozy, Zeppelin, Hue, **NIFI**,**Kafka**, Flume, Sqoop, Node-Red. No Relational Databases: **Hbase**, **MongoDB**, **Cassandra**.
+
+```{r}
+IT <- Training %>%
+  filter(Area == "Information technology") %>% 
+  arrange(Skills,Technology,Course,"Date", descending = FALSE) %>%
+  select(Course, Skills, Technology, 'Date', Instructor, Company, Total)
+```
+
+Training by Skill
+
+```{r}
+GA <- ggplot(IT, aes(y = Skills)) +
+        geom_bar(aes(fill = Skills)) +
+        ggtitle("Information Technology Training(Courses)")+
+        xlab("Courses")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+GB <- ggplot(IT, aes(x = Total, y = Skills)) +
+        geom_col(aes(fill = Skills)) +
+        ggtitle("Information Technology Training(Hours)") +
+        xlab("Hours")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+grid.arrange(GA,GB, nrow = 1)
+```
+
+Training by Technology
+
+```{r}
+GC <- ggplot(IT, aes(y = Technology)) +
+        geom_bar(aes(fill = Technology)) +
+        ggtitle("Information Technology Training(Courses)")+
+        xlab("Courses")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+GD <- ggplot(IT, aes(x = Total, y = Technology)) +
+        geom_col(aes(fill = Technology)) +
+        ggtitle("Information Technology Training(Hours)")+
+        xlab("Hours")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+grid.arrange(GC,GD, nrow = 1)
+```
+
+```{r}
+IT %>% datatable(class = 'cell-border stripe',filter = "top", 
+          options = list(pageLength = 91),
+          caption = htmltools::tags$caption( 
+          style = 'caption-side: top;
+                   text-align: center;
+                   color:black;
+                   font-size:200%;', 'Information Technology Training')) %>% 
+          formatRound('Total', 0) 
+```
+
+------------------------------------------------------------------------
+
+## Data Science & Big Data
+
+In this section we can see the training I did to deep dive in Artificial Intelligence and Machine Learning. Writing code in **R**, **Python** using tools like **Spark**, **Kera's**, **Theano**, **TensorFlow**, **H20**, **Tableau**, **Power BI**.
+
+Machine Learning Algorithms for ***Regression***: Simple Linear Regression, Multiple Linear Regressions, Polynomial Regression, Support Vector Regression (SVR), Decision Tree, Random Forest, XGBoost, Catboost, Lightgbm. ***Classification***: Logistic Regression, K-Nearest Neighbours (K-NN), Support Vector Machine (SVM), Kernel SVM, Naïve Bayes, Decision Tree Classification, Random Forests Classification, XGBoost, Cat Boost. ***Clustering***: K-Means Clustering, Hierarchical Clustering. ***Association Rule*** (Basket Analysis): Apriori, Ecla. ***Reinforcement Learning***: Upper Confidence Bound (UCB), Thompson Sampling, QQ-Learning. NLP - Natural Language Processing. ***Dimensionality Reduction***: Principal Component Analysis (PCA), Linear Discriminant Analysis (LDA), Kernel (PCA), ***Model Selection and Boosting***: K-Fold Cross Validation, Grid Search. ***Artificial Intelligence***: Q-Learning, Convolutional Neural Networks, Q-Learning, YOLO5, Computer Vision, Object Recognition. Cloud Environment: Amazon-AWS, Google Cloud, Databricks, AZURE.
+
+```{r}
+DataScience <- Training %>%
+  filter( Area == "Data Science") %>%
+  arrange(Skills,Technology,Course,"Date", descending = FALSE) %>%
+  select(Course, Skills, Technology, 'Date', Instructor, Company, Total)
+```
+
+Training by Skill
+
+```{r}
+GA <- ggplot(DataScience, aes(y = Skills)) +
+        geom_bar(aes(fill = Skills)) +
+        ggtitle("Data Science & Big Data Training(Courses)")+
+        xlab("Courses")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+GB <- ggplot(DataScience, aes(x = Total, y = Skills)) +
+        geom_col(aes(fill = Skills), position = position_stack(reverse = TRUE)) +
+        ggtitle("Data Science & Big Data Training(Hours)") +
+        xlab("Hours") +
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+grid.arrange(GA,GB, nrow = 1)
+```
+
+Training by Technology
+
+```{r}
+GC <- ggplot(DataScience, aes(y = Technology)) +
+        geom_bar(aes(fill = Technology)) +
+        ggtitle("Data Science & Big Data Training(Courses)")+
+        xlab("Courses")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+GD <- ggplot(DataScience, aes(x = Total, y = Technology)) +
+        geom_col(aes(fill = Technology)) +
+        ggtitle("Data Science & Big Data Training(Courses)") +
+        xlab("Courses")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+grid.arrange(GC,GD, nrow = 1)
+```
+
+```{r}
+DataScience %>% datatable(class = 'cell-border stripe',filter = "top", 
+          options = list(pageLength = 130, autoWidth = TRUE),
+          caption = htmltools::tags$caption( 
+          style = 'caption-side: top;
+                   text-align: center;
+                   color:black;
+                   font-size:200% ;                                                      '                      ,'Data Science & Big Data Training')) %>% 
+          formatRound('Total', 0)
+```
+
+------------------------------------------------------------------------
+
+## Business & Management
+
+This is a couple of training in Business and Management like Marketing, Sales, Productivity, Team Building and related soft skills.
+
+```{r}
+Business <- Training %>%
+  filter( Area == "Business") %>%
+  arrange(Skills,Course,"Date", descending = TRUE) %>%
+  select(Course, 'Date', Instructor, Company, Skills, Total)
+```
+
+```{r}
+GC <- ggplot(Business, aes(y = Skills)) +
+        geom_bar(aes(fill = Skills)) +
+        ggtitle("Business Training(Courses)") +
+        xlab("Courses")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+GD <- ggplot(Business, aes(x = Total, y = Skills)) +
+        geom_col(aes(fill = Skills)) +
+        ggtitle("Business Training(Hours)") +
+        xlab("Hours")+
+        scale_color_viridis(discrete = TRUE, option = "D") +
+        scale_fill_viridis(discrete = TRUE) +
+        theme(legend.position = "none")
+```
+
+```{r}
+grid.arrange(GC,GD, nrow = 1)
+```
+
+```{r}
+Business %>% datatable(class = 'cell-border stripe',filter = "top", 
+          options = list(pageLength = 130, autoWidth = TRUE),
+          caption = htmltools::tags$caption( 
+          style = 'caption-side: top;
+                   text-align: center;
+                   color:black;
+                   font-size:200% ;                                                      '                      ,'Business and Management')) %>% 
+          formatRound('Total', 0)
+```
