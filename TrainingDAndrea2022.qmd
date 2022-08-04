@@ -1,0 +1,313 @@
+---
+title: "Training"
+description: Showing some neat features of Quarto!
+date: today # other options: now, last-modified
+author:
+  - name: Joao Luiz D'Andrea 
+    url: https://www.linkedin.com/in/joaoluizdandrea
+    affiliation: Tableau Public Profile
+    affiliation-url: https://www.github.com/jlrdandrea/
+title-block-banner: true
+#title-block-banner: "#562457"
+format:
+  html:
+    theme: flatly
+    code-fold: true
+    toc: true
+    number-sections: true
+#bibliography: references.bib
+link-citations: yes
+#csl: biomed-central.csl
+---
+
+```{r warning=FALSE, include=FALSE}
+library(tidyverse)
+library(plotly)
+library(tm)
+library(SnowballC)
+library(wordcloud)
+library(RColorBrewer)
+library(DT)
+library(gridExtra)
+library(viridis)
+library(kableExtra)
+
+theme_set(
+  theme_classic()+
+  # theme_grey() +
+    theme(legend.position = "none",
+          axis.title.y = element_blank(),
+  ))
+
+Pal_Seq_Blue_6 = c("#f1eef6","#bdc9e1","#74a9cf","#2b8cbe","#045a8d")
+```
+
+```{r}
+Training <- read_csv("Training2022_v2.csv", show_col_types = FALSE)
+```
+
+I can resume all this learning experience as "Discipline". Motivation makes you start discipline moves you to the end.
+
+## Training per Area
+
+What you will see below is a list of training I did to support my professional life as an Information technology Project Manager. When you work as a consultant in the enterprise is important to know about the best practices in IT Governance, Project Management and the trending technologies.
+
+:::{.callout-note}
+Not to micromanage but to see what others can't, pro actively avoiding problems and identifying risks.
+"You can't control what you can't measure" -- Tom DeMarco.
+:::
+
+```{r}
+GA<- Training %>% 
+ggplot(aes(y = fct_infreq(Area))) +
+ geom_bar(aes(fill = fct_infreq(Area)),
+          stat = "count") +
+ ggtitle("Training") +
+ xlab("Number of Courses") +
+ scale_fill_brewer(palette = "Blues", direction = -1 ) +
+ theme(legend.position = "none") 
+
+ggplotly(GA, tooltip = "count") %>% 
+  config(displayModeBar = FALSE)
+```
+
+## Information Technology Governance
+
+Know IT Governance is important to feel the context we are inserted. Projects must be Planned, Executed, Controlled and Closed with this in mind. At the end the project must fit in the Governance in place considering, people, polices and frameworks, processes, organizational structures, culture, ethics and behaviour, information, services, Infrastructure and applications.
+
+```{r}
+# Filtering Training by Area
+Governance <- Training %>%
+  filter( Area == "IT Governance") %>%
+  arrange(Skills, Course,"Date", descending = TRUE) %>%
+  select(Course, Skills,'Date')
+
+GA<- Governance %>% 
+ggplot(aes(y = fct_infreq(Skills))) +
+ geom_bar(aes(fill = fct_infreq(Skills)),
+          stat = "count") +
+ ggtitle("IT Governance Training") +
+ xlab("Number of Courses") +
+ scale_fill_brewer(palette = "Purples", direction = -1 ) +
+ theme(legend.position = "none") 
+
+ggplotly(GA, tooltip = "count") %>% 
+  config(displayModeBar = FALSE)
+
+```
+
+::: {layout-ncol=1}
+![COBIT & ITIL Certificate](images/Cobit2022-08-04.png){#fig-cobit}
+:::
+
+```{r}
+# Building a Table 
+Governance %>% datatable(class = 'cell-border stripe',filter = "top", 
+          options = list(pageLength = 7),
+          caption = htmltools::tags$caption( 
+            style = 'caption-side: top;
+                     text-align: left;
+                     color:black;
+                     font-size:100% ;',
+            'IT Governance Training'))
+```
+
+## Project Management
+
+Project Management is about Servant Leadership it means be open to do your best to remove any impediments we as a team have to deliver the project outcomes.
+
+The best practices like **PRINCE2**, **PMBOK**, and agile practices like **Scrum**, **Kanban**, **RUP**, facilitates the delivery process. 
+
+:::{.callout-note}
+Lets keep in mind we are free to adapt and improve methodologies and project documentations to fit our company culture. 
+"Methodologies are treks not rails" - Joao Luiz D'Andrea
+:::
+
+```{r}
+ProjectManagement <- Training %>%
+  filter( Area == "Project Management") %>%
+  arrange(Skills,Technology,Course,"Date", descending = TRUE) %>%
+  select(Course, Skills, 'Date')
+
+GA<- ProjectManagement %>% 
+ggplot(aes(y = fct_infreq(Skills))) +
+ geom_bar(aes(fill = fct_infreq(Skills)),
+          stat = "count") +
+ ggtitle("Project Management Training") +
+ xlab("Number of Courses") +
+ scale_fill_brewer(palette = "Blues", direction = -1 ) +
+ theme(legend.position = "none") 
+
+ggplotly(GA, tooltip = "count") %>% 
+  config(displayModeBar = FALSE)
+```
+
+::: {layout-nrow=2}
+![PRINCE2 & Managing Successfull Programmes Certification](images/AXELOS2022-08-04.png){#fig-axelos}
+
+![SCRUM Certification](images/Scrum2022-08-04.png){#fig-scrum}
+
+![PMI & SAP](images/SAP2022-08-04.png){#fig-sap}
+
+:::
+
+
+```{r}
+ProjectManagement %>% datatable(class = 'cell-border stripe',filter = "top", 
+          options = list(pageLength = 50),
+          caption = htmltools::tags$caption( 
+          style = 'caption-side: top;                                                                           text-align: left;                                                                          color:black;
+                   font-size:100%;
+          ','Project Management Training'))
+```
+
+## Information Technology and Data Science Training
+
+### Information Technology
+
+I love technology and how it affect the business and our day-by-day activities and change the world. That was my motivation when I started my way in IT.
+
+It has been a life learning endeavour to keep up to date and have a deep understand of new technologies in special in the last ten year when the changes on infrastructure enable **Artificial Intelligence**, **Machine Learning**, **Block Chain** and the **Cloud** movement. 
+
+In the table below we can see my effort in that direction learning: **Spark** (Spark SQL, Spark Graph-X, Spark ML, Spark Streaming), **Hadoop**, Ambary, HDFS, Map Reduce, Pig, Hive, Drill, Phoenix, Presto, Yarn, Messos, Zookeeper, Oozy, Zeppelin, Hue, Flume, Sqoop, **NIFI**, **Kafka**, Node-Red. No Relational Databases like: **Hbase**, **MongoDB**, **Cassandra**.
+
+Update with the new releases of ERP and CRM Software like SAP, Sales-force, Microsoft Dynamics 365 and Cloud Environment: Amazon-AWS, Google Cloud, Databricks, AZURE.
+
+```{r}
+IT <- Training %>%
+  filter(Area == "Information technology") %>% 
+  arrange(Skills,Technology,Course,"Date", descending = FALSE) %>%
+  select(Course, Skills, Technology,'Date')
+
+GA<- IT %>% 
+ggplot(aes(y = fct_infreq(Skills))) +
+ geom_bar(aes(fill = fct_infreq(Skills)),
+              stat = "count") +
+ ggtitle("Training by IT Skill") +
+ xlab("Number of Courses") +
+ scale_fill_viridis(discrete = TRUE) +
+ theme(legend.position = "none") 
+
+ggplotly(GA, tooltip = "count") %>% 
+  config(displayModeBar = FALSE)
+
+IT %>% datatable(class = 'cell-border stripe',filter = "top", 
+          options = list(pageLength = 50),
+          caption = htmltools::tags$caption( 
+          style = 'caption-side: top;
+                   text-align: left;
+                   color:black;
+                   font-size:100%;', 'Information Technology Training'))
+
+GA<- IT %>% 
+ggplot(aes(y = fct_infreq(Technology))) +
+ geom_bar(aes(fill = fct_infreq(Technology)),
+          stat = "count") +
+ ggtitle("Training by Technology") +
+ xlab("Number of Courses") +
+ scale_fill_viridis(discrete = TRUE) +
+ theme(legend.position = "none") 
+
+ggplotly(GA, tooltip = "count") %>% 
+  config(displayModeBar = FALSE)
+```
+
+### Data Science & Big Data
+
+In this section we can see the training I did to deep dive in Artificial Intelligence and Machine Learning. Writing code in **R**, **Python** using tools like **Spark**, **Kera's**, **Theano**, **TensorFlow**, **H20**, **Tableau**, **Power BI**.
+
+:::{.callout-caution collapse="true"}
+## Machine Learning Algorithms for :
+***Regression***: Simple Linear Regression, Multiple Linear Regressions, Polynomial Regression, Support Vector Regression (SVR), Decision Tree, Random Forest, XGBoost, Catboost, Lightgbm. 
+
+***Classification***: Logistic Regression, K-Nearest Neighbours (K-NN), Support Vector Machine (SVM), Kernel SVM, Naïve Bayes, Decision Tree Classification, Random Forests Classification, XGBoost, Cat Boost.
+
+***Clustering***: K-Means Clustering, Hierarchical Clustering.
+
+***Association Rule*** (Basket Analysis): Apriori, Ecla.
+
+***Reinforcement Learning***: Upper Confidence Bound (UCB), Thompson Sampling, QQ-Learning. NLP - Natural Language Processing.
+
+***Dimensionality Reduction***: Principal Component Analysis (PCA), Linear Discriminant Analysis (LDA), Kernel (PCA),
+
+***Model Selection and Boosting***: K-Fold Cross Validation, Grid Search.
+
+***Artificial Intelligence***: Computer Vision, Object Recognition and reinforcement Learning. Q-Learning, Convolution Neural Networks, YOLO5.
+:::
+
+```{r}
+DataScience <- Training %>%
+  filter( Area == "Data Science") %>%
+  arrange(Skills,Technology,Course,"Date", descending = FALSE) %>%
+  select(Course, Skills, Technology, 'Date')
+
+ITDS <- Training %>%
+  filter(Area == "Data Science") %>% 
+  arrange(Skills,Technology,Course,"Date", descending = FALSE) %>%
+  select(Course, Skills, Technology, 'Date')
+
+GA<- ITDS %>% 
+ggplot(aes(y = fct_infreq(Skills))) +
+ geom_bar(aes(fill = fct_infreq(Skills)),
+          stat = "count") +
+ ggtitle("Training by IT Skill") +
+ xlab("Number of Courses") +
+ scale_fill_viridis(discrete = TRUE) +
+ theme(legend.position = "none") 
+
+ggplotly(GA, tooltip = "count") %>% 
+  config(displayModeBar = FALSE)
+
+DataScience %>% datatable(class = 'cell-border stripe',filter = "top", 
+          options = list(pageLength = 50, autoWidth = TRUE),
+          caption = htmltools::tags$caption( 
+          style = 'caption-side: top;
+                   text-align: left;
+                   color:black;
+                   font-size:100% ;                                                      '                      ,'Data Science & Big Data Training')) 
+
+
+GA<- ITDS %>% 
+ggplot(aes(y = fct_infreq(Technology))) +
+ geom_bar(aes(fill = fct_infreq(Technology)),
+          stat = "count") +
+ ggtitle("Training by Technology") +
+ xlab("Number of Courses") +
+ scale_fill_viridis(discrete = TRUE) +
+ theme(legend.position = "none") 
+
+ggplotly(GA, tooltip = "count") %>% 
+  config(displayModeBar = FALSE)
+```
+
+## Business & Management
+
+This is a couple of training in Business and Management like Marketing, Sales, Productivity, Team Building and related soft skills.
+
+```{r}
+Business <- Training %>%
+  filter( Area == "Business") %>%
+  arrange(Skills,Course,"Date", descending = TRUE) %>%
+  select(Course, Skills, 'Date')
+
+GA<- Business %>% 
+ggplot(aes(y = fct_infreq(Skills))) +
+ geom_bar(aes(fill = fct_infreq(Skills)),
+          stat = "count") +
+ ggtitle("Business Training") +
+ xlab("Number of Courses") +
+ scale_fill_viridis(discrete = TRUE) +
+ theme(legend.position = "none") 
+
+ggplotly(GA, tooltip = "count") %>% 
+  config(displayModeBar = FALSE)
+
+Business %>% datatable(class = 'cell-border stripe',filter = "top", 
+          options = list(pageLength = 50, autoWidth = TRUE),
+          caption = htmltools::tags$caption( 
+          style = 'caption-side: top;
+                   text-align: left;
+                   color:black;
+                   font-size:100%;' ,'Business and Management')) 
+```
+
